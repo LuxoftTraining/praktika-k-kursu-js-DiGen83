@@ -1,4 +1,5 @@
-import { DATA } from './employees-json';
+import DATA from './employees-json';
+import {Employee,jsonToEmployees} from "./model/Employee";
 
 const PLACEHOLDER = 'employeesPlaceholder'
 
@@ -20,8 +21,8 @@ export function findByName(name, surname) {
     return res;
 }
 
-export function addEmployee(name, surname, age) {
-    if (!name || name.length==0 || !surname || surname.length==0 || !age || age.length==0) {
+export function addEmployee(name, surname, dateOfBirth) {
+    if (!name || name.length==0 || !surname || surname.length==0 || !dateOfBirth || dateOfBirth.length==0) {
         throw new Error("name, surname and age should be not empty");
     }
     let max = 0;
@@ -29,7 +30,7 @@ export function addEmployee(name, surname, age) {
         if (e.id>max) max = e.id;
     }
     let id = max+1;
-    DATA.employees.push({id,name,surname,age});
+    DATA.employees.push({id,name,surname,dateOfBirth});
     return id;
 }
 
@@ -57,24 +58,6 @@ function showEmployees() {
 }
 */
 
-function text(ageC) {
-	let txt;
-	let count = ageC % 100;
-	if (count >= 5 && count <= 20) {
-		txt = 'лет';
-	} else {
-		count = count % 10;
-		if (count == 1) {
-			txt = 'год';
-		} else if (count >= 2 && count <= 4) {
-			txt = 'года';
-		} else {
-			txt = 'лет';
-		}
-	}
-	return ageC + " " + txt;
-}
-
 
 
 
@@ -83,18 +66,10 @@ export function showEmployees(employees) {
     clearEmployeesPlaceholder();
     const ul = document.createElement("ul");
 
-    for (let employee of employees) {
+    for (let employee of jsonToEmployees(employees)) {
         const li = document.createElement("li");
-        ul.appendChild(li);
-
-
-
-        
-
-        let getAge = ""
-         if(employee.age){getAge = text(employee.age)} else {getAge = "? лет"};
-
-        li.innerHTML = employee.name + " " +employee.surname + " " + getAge + " ";
+        li.innerHTML = employee;
+        ul.appendChild(li);  
 
         const removeButton = document.createElement("button");
         removeButton.innerHTML = "Удалить";

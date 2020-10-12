@@ -90,45 +90,201 @@
 /*!*************************************!*\
   !*** ./employees/employees-json.js ***!
   \*************************************/
-/*! exports provided: DATA */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DATA", function() { return DATA; });
-const DATA = {
+/* harmony default export */ __webpack_exports__["default"] = ({
 
  employees: [
    {
     id: 1,
     name: "Пафнутий",
     surname: "Пафнутьев",
-    age: 35,
+    dateOfBirth: "2000-01-01",
     department: "IT"
    },
    {
     id: 2,
     name: "Иван",
     surname: "Иванов",
-    age: 22,
+    dateOfBirth: "1976-12-07",
     department: "HR"
    },
    {
     id: 3,
     name: "Сергей",
     surname: "Петров",
-    age: 39,
+    dateOfBirth: "1996-05-01",
     department: "IT"
    },
    {
     id: 4,
     name: "Анна",
     surname: "Сидорова",
-    age: 51,
+    dateOfBirth: "1983-06-10",
     department: "HR"
    }   
    ]
+});
+
+
+/***/ }),
+
+/***/ "./employees/model/Employee.js":
+/*!*************************************!*\
+  !*** ./employees/model/Employee.js ***!
+  \*************************************/
+/*! exports provided: jsonToEmployees, Employee */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "jsonToEmployees", function() { return jsonToEmployees; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Employee", function() { return Employee; });
+/* harmony import */ var _Person__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Person */ "./employees/model/Person.js");
+/* harmony import */ var _employees_json__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../employees-json */ "./employees/employees-json.js");
+
+
+
+function jsonToEmployees(employeesJSON) {
+    let employees = [];
+    for (let e of employeesJSON) {
+        employees.push(Employee.fromJSON(e));
+    }
+    return employees;
 }
+
+window.allEmployees = function() {
+    return jsonToEmployees(_employees_json__WEBPACK_IMPORTED_MODULE_1__["default"].employees);
+}
+
+class Employee extends _Person__WEBPACK_IMPORTED_MODULE_0__["Person"] {
+
+	constructor(name, surname) {
+	    super(name,surname);
+    }
+
+	static fromJSON(obj) {
+		return Object.assign(new Employee(), obj)
+	}
+
+	set position(position) {
+		this._position = position;
+	}
+
+	get position() {
+		return this._position;
+	}
+
+	toString() {
+        return super.toString() +
+            (this.position?"Должность: "+this.position:"");
+    }
+}
+
+window.Employee = Employee;
+
+/***/ }),
+
+/***/ "./employees/model/Person.js":
+/*!***********************************!*\
+  !*** ./employees/model/Person.js ***!
+  \***********************************/
+/*! exports provided: Person */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Person", function() { return Person; });
+
+
+class Person {
+
+	constructor(name, surname) {
+		this.name = name;
+		this.surname = surname;
+	}
+
+	static fromJSON(obj) {
+		return Object.assign(new Person(), obj)
+	}
+
+	readJSON(json) {
+		Object.assign(this, json)
+	}
+
+	get fullName() {
+		return this.name+" "+this.surname;
+	}
+
+	get age() {
+		if (!this._dateOfBirth) return "";
+		let ageDiff = Date.now() - this._dateOfBirth.getTime();
+		let ageDate = new Date(ageDiff); // miliseconds from epoch
+		function text(ageC) {
+			let txt;
+			let count = ageC % 100;
+			if (count >= 5 && count <= 20) {
+				txt = 'лет';
+			} else {
+				count = count % 10;
+				if (count == 1) {
+					txt = 'год';
+				} else if (count >= 2 && count <= 4) {
+					txt = 'года';
+				} else {
+					txt = 'лет';
+				}
+			}
+			return ageC + " " + txt;
+		}
+		let getAge = ""
+         if(Math.abs(ageDate.getUTCFullYear() - 1970)){getAge = text(Math.abs(ageDate.getUTCFullYear() - 1970))} else {getAge = "? лет"};
+
+
+		return " <b>Возраст:</b> "+ getAge;
+	}
+
+	set dateOfBirth(date) {
+		this._dateOfBirth = new Date(date);
+	}
+
+	get dateOfBirth() {
+		return this._dateOfBirth?
+			" <b>Дата рождения:</b> "+this.formatDate(this._dateOfBirth):
+			"";
+	}
+
+	addPhone(phone) {
+		const phones = this.phones;
+		if (!phones) {
+			this.phones = [];
+		}
+		this.phones.push(phone);
+	}
+
+	formatDate(date) {
+		let day = date.getDate();
+		if (day<10) day = '0'+day;
+		let month = date.getMonth()+1;
+		if (month<10) month = '0'+month;
+		let year = date.getFullYear();
+
+		return day + '.' + month + '.' + year;
+	}
+
+	toString() {
+		const phones = this.phones?
+			`Список телефонов: ${this.phones}`:'';
+		return `
+			${this.fullName} \
+			${this.dateOfBirth} ${this.age} ${phones}`;
+	}
+
+}
+
 
 
 /***/ }),
@@ -155,6 +311,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "assignSendOnEnter", function() { return assignSendOnEnter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getEmployees", function() { return getEmployees; });
 /* harmony import */ var _employees_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./employees-json */ "./employees/employees-json.js");
+/* harmony import */ var _model_Employee__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./model/Employee */ "./employees/model/Employee.js");
+
 
 
 const PLACEHOLDER = 'employeesPlaceholder'
@@ -168,7 +326,7 @@ function clearEmployeesPlaceholder() {
 
 function findByName(name, surname) {
     let res = [];
-    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         if ((!name || e.name===name) &&
             (!surname || e.surname===surname)) {
             res.push(e);
@@ -177,26 +335,26 @@ function findByName(name, surname) {
     return res;
 }
 
-function addEmployee(name, surname, age) {
-    if (!name || name.length==0 || !surname || surname.length==0 || !age || age.length==0) {
+function addEmployee(name, surname, dateOfBirth) {
+    if (!name || name.length==0 || !surname || surname.length==0 || !dateOfBirth || dateOfBirth.length==0) {
         throw new Error("name, surname and age should be not empty");
     }
     let max = 0;
-    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         if (e.id>max) max = e.id;
     }
     let id = max+1;
-    _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees.push({id,name,surname,age});
+    _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees.push({id,name,surname,dateOfBirth});
     return id;
 }
 
 function removeEmployee(id) {
     let index = 0;
-    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         if (e.id===id) break;
         index++;
     }
-    _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees.splice(index, 1);
+    _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees.splice(index, 1);
 }
 
 function showEmployee(employee) {
@@ -214,24 +372,6 @@ function showEmployees() {
 }
 */
 
-function text(ageC) {
-	let txt;
-	let count = ageC % 100;
-	if (count >= 5 && count <= 20) {
-		txt = 'лет';
-	} else {
-		count = count % 10;
-		if (count == 1) {
-			txt = 'год';
-		} else if (count >= 2 && count <= 4) {
-			txt = 'года';
-		} else {
-			txt = 'лет';
-		}
-	}
-	return ageC + " " + txt;
-}
-
 
 
 
@@ -240,18 +380,10 @@ function showEmployees(employees) {
     clearEmployeesPlaceholder();
     const ul = document.createElement("ul");
 
-    for (let employee of employees) {
+    for (let employee of Object(_model_Employee__WEBPACK_IMPORTED_MODULE_1__["jsonToEmployees"])(employees)) {
         const li = document.createElement("li");
-        ul.appendChild(li);
-
-
-
-        
-
-        let getAge = ""
-         if(employee.age){getAge = text(employee.age)} else {getAge = "? лет"};
-
-        li.innerHTML = employee.name + " " +employee.surname + " " + getAge + " ";
+        li.innerHTML = employee;
+        ul.appendChild(li);  
 
         const removeButton = document.createElement("button");
         removeButton.innerHTML = "Удалить";
@@ -275,7 +407,7 @@ function showEmployees(employees) {
 
     }
     document.getElementById(PLACEHOLDER).appendChild(ul);
-    _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees.forEach(showEmployee);
+    _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees.forEach(showEmployee);
 }
 
 /*
@@ -294,7 +426,7 @@ function findById(id) {
     if (employeeMap[id]) {
         return employeeMap[id];
     }
-    for (var e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (var e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         if (id==e.id) {
             employeeMap[id] = e;
             return e;
@@ -379,7 +511,7 @@ function fillSelect(select, values, selectedValue) {
 
 function getEmployeesOptions() {
     let options = [];
-    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         options.push({text:e.name+' '+e.surname, value:e.id});
     }
     return options;
@@ -392,7 +524,7 @@ function setEmployeeManager(id, managerId) {
 
 function searchEmployees(name, surname, managerRef) {
     let results = [];
-    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees) {
+    for (let e of _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees) {
         if ((!name || e.name==name) &&
             (!surname || e.surname==surname) &&
             (!managerRef || e.managerRef==managerRef)) {
@@ -415,7 +547,7 @@ function assignSendOnEnter(paneId, buttonId) {
 }
 
 
-function getEmployees() { return _employees_json__WEBPACK_IMPORTED_MODULE_0__["DATA"].employees }
+function getEmployees() { return _employees_json__WEBPACK_IMPORTED_MODULE_0__["default"].employees }
 
 
 
@@ -439,10 +571,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "searchEmployeeUI", function() { return searchEmployeeUI; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openTab", function() { return openTab; });
 /* harmony import */ var _service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./service */ "./employees/service.js");
-
-
-
-
 
 
 

@@ -4,10 +4,6 @@ import { getEmployees, removeEmployee, addEmployee,
 
 
 
-
-
-
-
 export function runUI() {
     showEmployees(getEmployees());
     fillSelect(document.getElementById("managerSelect"), getEmployeesOptions());
