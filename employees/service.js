@@ -232,6 +232,38 @@ export function assignSendOnEnter(paneId, buttonId) {
     }
 }
 
+window.sumSalaryInDep = function (dep) {
+    return DATA.employees
+         .filter(e=>e.department===dep)
+	     .map(e=>e.salary)
+        .reduce((a,b)=>a+b);
+}
+
+window.avgSalaryInDep =  function(dep) {
+    let arr = DATA.employees.filter(e=>e.department===dep).map(e=>e.salary)
+    return arr.reduce((a,b)=>a+b)/arr.length;
+}
+
+window.maxSalaryInDep = function (dep) {
+    return DATA.employees
+         .filter(e=>e.department===dep)
+	     .map(e=>e.salary).sort().reverse()[0];
+}
+
+
+window.depEmployees = function (dep){
+    return DATA.employees
+    .filter(e=>e.department===dep)
+    .map(e=>e.surname)
+
+}
+
+window.employeesWithSalaryMoreThan = function (salary){
+    return DATA.employees
+         .filter(e=>e.salary>salary)
+	     .map(e=>e.surname);
+}
+
 
 export function getEmployees() { return DATA.employees }
 
